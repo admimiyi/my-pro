@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kişisel Gelişim Günlüğü</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Green & Black Tema */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 24px;
+            position: relative; /* Saatin mutlak konumlandırılması için */
+        }
+        .card {
+            background-color: #1e1e1e;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            border: 1px solid #2a2a2a;
+            position: relative; /* Düğmenin mutlak konumlandırılması için */
+        }
+        h1, h2 {
+            color: #ffffff;
+        }
+        p, label {
+            color: #b0b0b0;
+        }
+        .emoji-selector {
+            display: flex; /* Tailwind'den gelen 'flex' ile uyumlu */
+            gap: 0.2rem; /* Emojiler arası varsayılan boşluk */
+            justify-content: center; /* Emojileri ortala */
+        }
+        .emoji-selector span {
+            font-size: 2rem;
+            cursor: pointer;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+            opacity: 0.4;
+            padding: 0.25rem;
+            border-radius: 50%;
+        }
+        .emoji-selector span.selected {
+            transform: scale(1.2);
+            opacity: 1;
+        }
+        /* Emotion selector animation */
+        @keyframes green-glow-and-scale {
+            0% {
+                box-shadow: 0 0 0px rgba(16, 185, 129, 0); /* Green */
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(16, 185, 129, 0.7); /* Green */
+                transform: scale(1.3); /* Biraz daha büyük bir pop */
+            }
+            100% {
+                box-shadow: 0 0 0px rgba(16, 185, 129, 0); /* Green */
+                transform: scale(1.2); /* Seçili hali için son ölçek */
+            }
+        }
+        .emoji-selector span.glowing {
+            animation: green-glow-and-scale 0.8s ease-in-out;
+        }
+
+        /* CUSTOM CHECKBOX STYLES */
+        .goal-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #333;
+        }
+        .goal-item:last-child {
+            border-bottom: none;
+        }
+        /* Hide default checkbox */
+        .goal-item input[type="checkbox"] {
+            appearance: none; /* For modern browsers */
+            -webkit-appearance: none; /* For Safari */
+            -moz-appearance: none; /* For Firefox */
+            width: 20px;
+            height: 20px;
+            border: 2px solid #555; /* Gray border for unchecked state */
+            border-radius: 4px;
+            background-color: #2c2c2c; /* Background same as input field */
+            cursor: pointer;
+            position: relative; /* For pseudo-elements */
+            flex-shrink: 0; /* Prevent it from shrinking */
+        }
+
+        /* Style for the custom checkbox when checked */
+        .goal-item input[type="checkbox"]:checked {
+            background-color: #10B981; /* Green background for checked state */
+            border-color: #10B981; /* Green border for checked state */
+        }
+
+        /* Add the checkmark using a pseudo-element */
+        .goal-item input[type="checkbox"]:checked::after {
+            content: '✔'; /* Checkmark symbol */
+            font-size: 16px; /* Size of the checkmark */
+            color: white; /* White checkmark */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            line-height: 1; /* For better vertical alignment of the checkmark */
+        }
+
+        /* Adjust the label to be next to the custom checkbox */
+        .goal-item label {
+            margin-left: 10px; /* Space between custom checkbox and text */
+            flex-grow: 1; /* Allow label to take available space */
+        }
+
+        /* Keep line-through and gray color for completed text */
+        .goal-item label.completed {
+            text-decoration: line-through;
+            color: #666;
+        }
+        /* END CUSTOM CHECKBOX STYLES */
+
+        .goal-item .delete-btn {
+            background: none;
+            border: none;
+            color: #34D399; /* Green */
+            cursor: pointer;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+        .goal-item:hover .delete-btn {
+            opacity: 1;
+        }
+        .input-field, .textarea-field {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            background-color: #2c2c2c;
+            color: #e0e0e0;
+            transition: border-color 0.2s;
+        }
+        .input-field::placeholder, .textarea-field::placeholder {
+            color: #777;
+        }
+        .input-field:focus, .textarea-field:focus {
+            outline: none;
+            border-color: #34D399; /* Green */
+            box-shadow: 0 0 0 0.2rem rgba(16, 185, 129, 0.25); /* Green */
+        }
+        .btn-primary {
+            background-color: #10B981; /* Green */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, opacity 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: #059669; /* Darker Green */
+        }
+        .progress-bar {
+            height: 10px;
+            background-color: #333;
+            border-radius: 5px;
+            overflow: hidden;
+            width: 100%;
+        }
+        .progress-bar-inner {
+            height: 100%;
+            background-color: #10B981; /* Green */
+            transition: width 0.5s ease-in-out;
+            border-radius: 5px;
+        }
+        /* Tab button selected state */
+        .tab-btn.selected {
+            background-color: #059669; /* Darker Green */
+            opacity: 1;
+        }
+        .tab-btn:not(.selected) {
+            opacity: 0.6;
+        }
+        /* Saat göstergesi için stil */
+        #current-time {
+            position: absolute;
+            top: 24px; /* Konteynerin üstünden boşluk */
+            right: 24px; /* Konteynerin sağından boşluk */
+            font-size: 1.2rem; /* Daha küçük font */
+            color: #34D399; /* Green */
+            font-weight: 600;
+            z-index: 10; /* Diğer elementlerin üzerinde olması için */
+        }
+        /* Kupa parlaması için animasyon */
+        @keyframes gold-pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.15); opacity: 1; text-shadow: 0 0 15px rgba(255, 215, 0, 0.7); }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+        .trophy-glowing {
+            animation: gold-pulse 1.5s infinite alternate; /* Sonsuz ve ileri-geri */
+        }
+        /* Report card'daki kupa için konumlandırma */
+        .report-trophy {
+            font-size: 1.5rem; /* Rapor içindeki kupa boyutu */
+            margin-left: 8px;
+            vertical-align: middle; /* Metinla aynı hizada tutar */
+        }
+        /* Not öğeleri için stil - Kaldırıldı */
+
+        /* Responsive düzenleme: küçük ekranlarda emojiler ve başlık altına al */
+        @media (max-width: 640px) {
+            #current-time {
+                position: static; /* Statik konuma geri dön */
+                text-align: right;
+                margin-top: 8px; /* Tarih ile arasına boşluk */
+                font-size: 1rem;
+            }
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .flex-wrap-sm {
+                flex-wrap: wrap; /* Küçük ekranlarda butonları alt alta getir */
+            }
+            .flex-wrap-sm > button {
+                width: 100%;
+                margin-bottom: 8px;
+            }
+            .emoji-selector span {
+                font-size: 1rem; /* Mobil ekranlarda daha da küçük font boyutu */
+                padding: 0.05rem; /* Daha az padding */
+            }
+            .emoji-selector span.selected {
+                transform: scale(1.02); /* Mobil ekranlarda daha az belirgin scale */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto p-4 sm:p-6">
+        <div id="current-time"></div>
+
+        <div class="flex justify-center mb-6 space-x-4 flex-wrap-sm">
+            <button id="tab-today" class="btn-primary tab-btn selected">Bugünkü Günlük</button>
+            <button id="tab-reports" class="btn-primary tab-btn">Günlük Raporları</button>
+            </div>
+
+        <div id="today-journal-section">
+            <header class="flex justify-between items-center mb-6">
+                <div>
+                    <h1 id="current-date" class="text-2xl sm:text-3xl font-bold"></h1>
+                    <p id="day-counter" class="text-md text-gray-400"></p>
+                </div>
+            </header>
+
+            <div class="card">
+                <h2 class="text-lg font-semibold mb-2">Günün Alıntısı</h2>
+                <blockquote class="italic text-gray-400">
+                    <p id="quote-text">"Başarının sırrı, başlamaktır."</p>
+                    <footer id="quote-author" class="text-right text-sm mt-2 text-gray-500">- Mark Twain</footer>
+                </blockquote>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="card">
+                    <h2 class="text-lg font-semibold mb-4">Günün Modu ve Üretkenliği</h2>
+                    <div class="flex justify-around items-center">
+                        <div class="text-center">
+                            <p class="mb-2">Ruh Hali</p>
+                            <div id="mood-selector" class="emoji-selector flex">
+                                <span data-value="happy">😊</span>
+                                <span data-value="neutral">😐</span>
+                                <span data-value="sad">😔</span>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <p class="mb-2">Üretkenlik</p>
+                            <div id="productivity-selector" class="emoji-selector flex">
+                                <span data-value="high">🚀</span>
+                                <span data-value="medium">⚙️</span>
+                                <span data-value="low">🐌</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                       <h2 class="text-lg font-semibold mb-4">Skor ve Ödül</h2>
+                       <div class="flex items-center mb-4">
+                           <p class="mr-4">Hedef Puanı:</p>
+                           <p id="score" class="text-2xl font-bold text-green-500">0/10</p>
+                           <span id="reward-trophy" class="text-yellow-400 text-3xl ml-2 hidden">🏆</span>
+                       </div>
+                       <div class="progress-bar w-full mb-4">
+                           <div id="progress-bar-inner" style="width: 0%"></div>
+                       </div>
+                    <input type="text" id="reward-input" placeholder="Hedefler bitince ödülüm (örn: kahve)" class="input-field w-full">
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="flex justify-between items-center mb-2">
+                    <h2 class="text-lg font-semibold">Günün Hedefleri</h2>
+                    <!-- Tümünü Sil düğmesi eklendi -->
+                    <button id="clear-all-goals-btn" class="text-sm px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors duration-200">Tümünü Sil</button>
+                </div>
+                <div id="goal-list"></div>
+                <div class="flex mt-4 gap-2 flex-wrap-sm">
+                    <input type="text" id="new-goal-input" placeholder="Yeni bir hedef ekle..."class="input-field flex-grow">
+                    <button id="add-goal-btn" class="btn-primary"> Ekle</button>
+                    <button id="generate-ai-task-btn" class="btn-primary">Rastgele Görev Oluştur</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="card">
+                    <h2 class="text-lg font-semibold">Şükür Listesi</h2>
+                    <p class="text-sm text-gray-500 mb-4">Bugün şükrettiğin 3 şeyi yaz.</p>
+                    <input type="text" id="gratitude-1" placeholder="1. ..." class="input-field mb-2">
+                    <input type="text" id="gratitude-2" placeholder="2. ..." class="input-field mb-2">
+                    <input type="text" id="gratitude-3" placeholder="3. ..." class="input-field">
+                </div>
+
+                <div class="card">
+                    <h2 class="text-lg font-semibold">Yarın İçin Niyet</h2>
+                    <p class="text-sm text-gray-500 mb-4">"Yarın yaparsam günü kazanacağım şey..."</p>
+                    <input type="text" id="next-day-goal" placeholder="Tek cümlelik niyet (örn: Ders çalışmak)" class="input-field mb-2">
+                    </div>
+            </div>
+
+            <div class="card">
+                <h2 class="text-lg font-semibold">Gün Raporu</h2>
+                   <p class="text-sm text-gray-500 mb-4">Günün nasıl geçti? Kısaca özetle.</p>
+                <textarea id="daily-report" rows="4" class="textarea-field" placeholder="Bugün kendimi... hissettim çünkü..."></textarea>
+                <button id="generate-summary-btn" class="btn-primary w-full mt-4">Günün Özeti ✨</button>
+                <div id="summary-output" class="mt-4 p-4 rounded-lg bg-gray-800 border border-gray-700 hidden">
+                    <p id="summary-text" class="text-base text-white"></p>
+                    <p id="summary-loading" class="text-center text-gray-400 mt-2 hidden">Özet oluşturuluyor...</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="daily-reports-section" class="hidden">
+            <h2 class="text-xl sm:text-2xl font-bold mb-4">Geçmiş Günlük Raporları</h2>
+            <div id="reports-list" class="grid grid-cols-1 gap-6">
+                </div>
+        </div>
+
+        </div>
+
+    <!-- Custom Confirmation Modal HTML -->
+    <div id="custom-confirm-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+        <div class="bg-gray-900 p-6 rounded-lg shadow-lg max-w-sm w-full text-center border border-gray-700">
+            <p class="text-lg text-white mb-4">Tüm hedefleri silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.</p>
+            <div class="flex justify-center space-x-4">
+                <button id="confirm-yes" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md">Evet, Sil</button>
+                <button id="confirm-no" class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md">İptal</button>
+            </div>
+        </div>
+    </div>
+    <!-- End Custom Confirmation Modal HTML -->
+
+    <script type="module">
+        // Firebase Modules Import
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, getDocs, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- VARIABLES AND DOM ELEMENTS ---
+        let db, auth;
+        let userId;
+        let dailyData = {};
+        let dayCounter = 1;
+        let isAuthReady = false; // Flag to ensure Firestore operations wait for authentication
+
+        // Firestore configuration using __app_id and __firebase_config global variables
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+
+        // List of daily quotes
+        const quotes = [
+            { text: "Başarının sırrı, başlamaktır.", author: "Mark Twain" },
+            { text: "Küçük adımlar, büyük sonuçlar doğurur.", author: "Bilinmiyor" },
+            { text: "Bugünün işini yarına bırakma.", author: "Atasözü" },
+            { text: "En büyük zafer, kendine karşı kazandığındır.", author: "Platon" },
+            { text: "Hayal edebiliyorsan, yapabilirsin.", author: "Walt Disney" }
+        ];
+
+        // DOM Element references
+        const dateEl = document.getElementById('current-date');
+        const timeEl = document.getElementById('current-time');
+        const dayCounterEl = document.getElementById('day-counter');
+        const quoteTextEl = document.getElementById('quote-text');
+        const quoteAuthorEl = document.getElementById('quote-author');
+        const moodSelector = document.getElementById('mood-selector');
+        const productivitySelector = document.getElementById('productivity-selector');
+        const scoreEl = document.getElementById('score');
+        const progressBarInnerEl = document.getElementById('progress-bar-inner');
+        const rewardInput = document.getElementById('reward-input');
+        const goalListEl = document.getElementById('goal-list');
+        const newGoalInput  document.getElementById('new-goal-input');
+        const addGoalBtn = document.getElementById('add-goal-btn');
+        const generateAiTaskBtn = document.getElementById('generate-ai-task-btn');
+        const gratitudeInputs = [document.getElementById('gratitude-1'), document.getElementById('gratitude-2'), document.getElementById('gratitude-3')];
+        const nextDayGoalInput = document.getElementById('next-day-goal');
+        const dailyReportInput = document.getElementById('daily-report');
+        const generateSummaryBtn = document.getElementById('generate-summary-btn'); // New button for summary
+        const summaryOutputEl = document.getElementById('summary-output'); // Summary output container
+        const summaryTextEl = document.getElementById('summary-text'); // Summary text element
+        const summaryLoadingEl = document.getElementById('summary-loading'); // Summary loading element
+        const clearAllGoalsBtn = document.getElementById('clear-all-goals-btn'); // New button for clearing all goals
+
+        // Custom Confirmation Modal elements
+        const customConfirmModal = document.getElementById('custom-confirm-modal');
+        const confirmYesBtn = document.getElementById('confirm-yes');
+        const confirmNoBtn = document.getElementById('confirm-no');
+
+
+        // Tab and section DOM elements
+        const tabTodayBtn = document.getElementById('tab-today');
+        const tabReportsBtn = document.getElementById('tab-reports');
+        const todayJournalSection = document.getElementById('today-journal-section');
+        const dailyReportsSection = document.getElementById('daily-reports-section');
+        const reportsListEl = document.getElementById('reports-list');
+        
+        // --- INITIAL LOAD AND AUTHENTICATION ---
+        /**
+         * Initializes the Firebase app and handles user authentication.
+         * Starts application listeners after authentication is complete.
+         */
+        function initializeFirebase() {
+            try {
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                // Triggered when authentication state changes
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        // If user is logged in, set userId and start the application
+                        userId = user.uid;
+                        isAuthReady = true; // Set auth ready flag
+                        await startAppListeners();
+                    } else {
+                        // If user is not logged in, try to log in anonymously or with custom token
+                        try {
+                            if (typeof __initial_auth_token !== 'undefined') {
+                                // Use custom authentication token if available
+                                await signInWithCustomToken(auth, __initial_auth_token);
+                            } else {
+                                // Otherwise, sign in anonymously
+                                await signInAnonymously(auth);
+                            }
+                        } catch (error) {
+                            console.error("Firebase authentication failed:", error);
+                            // Show message to user on login error
+                            const errorMessage = document.createElement('div');
+                            errorMessage.className = 'text-red-500 text-center mt-8';
+                            errorMessage.textContent = 'Oturum açılırken bir hata oluştu. Lütfen sayfayı yenileyin.';
+                            document.body.appendChild(errorMessage);
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error("Firebase initialization failed:", error);
+                // Show message to user on Firebase initialization error
+                const errorMessage = document.createElement('div');
+                errorMessage.className = 'text-red-500 text-center mt-8';
+                errorMessage.textContent = 'Uygulama yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.';
+                document.body.appendChild(errorMessage);
+            }
+        }
+
+        let hasSetupEventListeners = false;
+        /**
+         * Starts the main application listeners after authentication is complete.
+         * Uses onSnapshot to listen for current day's data.
+         */
+        async function startAppListeners() {
+            // Exit if userId, db or isAuthReady is not set
+            if (!userId || !db || !isAuthReady) return;
+
+            // Set up real-time listener for current day's data
+            setupDailyDataListener();
+
+            // Set up event listeners only once
+            if (!hasSetupEventListeners) {
+                setupEventListeners();
+                hasSetupEventListeners = true;
+            }
+
+            // Update date and day counter initially
+            await setupDateAndDayCounter();
+            updateTime(); // Update time initially and every second
+            setInterval(updateTime, 1000); // Update time every second
+
+            // Show today's journal by default
+            showSection('today-journal');
+        }
+
+        /**
+         * Sets up a real-time listener in Firestore for the current day's log.
+         */
+        function setupDailyDataListener() {
+            const docId = getTodayDocId();
+            // Firestore document reference: artifacts/{appId}/users/{userId}/dailyLogs/{docId}
+            const docRef = doc(db, "artifacts", appId, "users", userId, "dailyLogs", docId);
+
+            onSnapshot(docRef, (docSnap) => {
+                // Process snapshot only if authentication is ready
+                if (!isAuthReady) return;
+
+                if (docSnap.exists()) {
+                    // If document exists, load data
+                    dailyData = docSnap.data();
+                } else {
+                    // If document does not exist, start a new log with default data
+                    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+                    dailyData = {
+                        date: docId, quote: randomQuote, mood: null, productivity: null,
+                        goals: [], // Goals array is now empty by default
+                        reward: '', gratitude: ['', '', ''], report: '', nextDayGoal: ''
+                    };
+                    // Make initial save for the new day
+                    saveData();
+                    // If a new document is created, re-update the day counter
+                    setupDateAndDayCounter();
+                }
+                // Update UI when data changes (locally or remotely)
+                updateUI();
+            }, (error) => {
+                console.error("Error listening to daily data:", error);
+            });
+        }
+
+        // --- DATE AND DAY COUNTER ---
+        /**
+         * Sets the current date and daily log counter.
+         * The daily log counter shows the number of all past daily entries for the user.
+         */
+        async function setupDateAndDayCounter() {
+            // Exit if userId, db or isAuthReady is not set
+            if (!userId || !db || !isAuthReady) return;
+
+            const today = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            dateEl.textContent = today.toLocaleDateString('tr-TR', options);
+
+            // Firestore collection reference to count all daily logs
+            const logsCollectionRef = collection(db, "artifacts", appId, "users", userId, "dailyLogs");
+            try {
+                const querySnapshot = await getDocs(logsCollectionRef);
+                dayCounter = querySnapshot.size; // Total number of unique daily logs
+                dayCounterEl.textContent = `Gün: ${dayCounter}`;
+            } catch (error) {
+                console.error("Error fetching day counter:", error);
+            }
+        }
+
+        /**
+         * Updates the current time and writes it to the 'current-time' element.
+         */
+        function updateTime() {
+            const now = new Date();
+            const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            timeEl.textContent = now.toLocaleTimeString('tr-TR', timeOptions);
+        }
+
+        // --- DATA LOADING AND SAVING ---
+        /**
+         * Returns the Firestore document ID for the current day. (e.g., "2023-10-27")
+         * @returns {string} The document ID for the current day.
+         */
+        function getTodayDocId() {
+            return new Date().toISOString().split('T')[0];
+        }
+
+        let saveTimeout;
+        /**
+         * Saves daily data to Firestore.
+         * Uses a delay to group consecutive calls.
+         */
+        function saveData() {
+            // Exit if userId, db or isAuthReady is not set
+            if (!userId || !db || !isAuthReady) return;
+
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(async () => {
+                const docId = getTodayDocId();
+                // Firestore document reference: artifacts/{appId}/users/{userId}/dailyLogs/{docId}
+                const docRef = doc(db, "artifacts", appId, "users", userId, "dailyLogs", docId);
+                try {
+                    // Save data to Firestore (merge mode preserves existing data)
+                    await setDoc(docRef, dailyData, { merge: true });
+                } catch (error) {
+                    console.error("Error saving data: ", error);
+                }
+            }, 500); // Save with 500ms delay
+        }
+
+        // --- UI UPDATE ---
+        /**
+         * Updates the user interface based on changes in the 'dailyData' object.
+         */
+        function updateUI() {
+            // Daily quote
+            quoteTextEl.textContent = `"${dailyData.quote?.text || ''}"`;
+            quoteAuthorEl.textContent = `- ${dailyData.quote?.author || ''}`;
+
+            // Update mood and productivity selectors
+            updateSelectorUI(moodSelector, dailyData.mood);
+            updateSelectorUI(productivitySelector, dailyData.productivity);
+
+            // Render goal list and update score bar
+            renderGoals();
+            updateScore(); // Will include the updated trophy logic
+
+            // Populate input fields with 'dailyData'
+            rewardInput.value = dailyData.reward || '';
+            (dailyData.gratitude || ['', '', '']).forEach((g, i) => gratitudeInputs[i].value = g);
+            nextDayGoalInput.value = dailyData.nextDayGoal || '';
+            dailyReportInput.value = dailyData.report || ''; /* Ensure it retains existing value */
+
+            // Hide summary output if daily report is empty or on initial load
+            if (dailyReportInput.value === '') {
+                summaryOutputEl.classList.add('hidden');
+                summaryTextEl.textContent = '';
+                summaryLoadingEl.classList.add('hidden');
+            }
+        }
+
+        /**
+         * Updates the emoji selector (mood/productivity) UI.
+         * Highlights the selected emoji.
+         * @param {HTMLElement} selector - The emoji selector container element.
+         * @param {string} value - The value of the selected emoji.
+         */
+        function updateSelectorUI(selector, value) {
+            Array.from(selector.children).forEach(span => {
+                span.classList.toggle('selected', span.dataset.value === value);
+            });
+        }
+        
+        /**
+         * Creates or updates the daily goals list in the DOM.
+         */
+        function renderGoals() {
+            goalListEl.innerHTML = ''; // Clear existing goals
+            if (!dailyData.goals) return; // Exit if no goals
+
+            dailyData.goals.forEach((goal, index) => {
+                const goalEl = document.createElement('div');
+                goalEl.className = 'goal-item';
+                goalEl.innerHTML = `
+                    <input type="checkbox" data-index="${index}" id="goal-${index}" ${goal.completed ? 'checked' : ''}>
+                    <label for="goal-${index}" class="${goal.completed ? 'completed' : ''}">${goal.text}</label>
+                    <button class="delete-btn ml-auto" data-index="${index}">✖</button>
+                `; // ml-auto aligns the delete button to the right
+                goalListEl.appendChild(goalEl);
+            });
+        }
+
+        /**
+         * Updates the score and progress bar based on completed goals.
+         */
+        function updateScore() {
+            const completedGoals = dailyData.goals?.filter(g => g.completed).length || 0;
+            const totalGoals = dailyData.goals?.length || 0;
+            scoreEl.textContent = `${completedGoals}/${totalGoals}`;
+            const percentage = totalGoals > 0 ? (completedGoals / totalGoals) * 100 : 0;
+            progressBarInnerEl.style.width = `${percentage}%`;
+
+            // Trophy animation logic for today's journal
+            const rewardTrophyEl = document.getElementById('reward-trophy');
+            if (rewardTrophyEl) {
+                // Kupa, toplam hedeflerin %75'i veya daha fazlası tamamlandığında ışıldasın.
+                if (totalGoals > 0 && completedGoals >= (totalGoals * 0.75)) {
+                    rewardTrophyEl.classList.remove('hidden'); // Show the trophy
+                    rewardTrophyEl.classList.add('trophy-glowing'); // Add the glowing animation
+                } else {
+                    rewardTrophyEl.classList.add('hidden'); // Hide the trophy
+                    rewardTrophyEl.classList.remove('trophy-glowing'); // Remove the glowing animation
+                }
+            }
+        }
+
+        // --- AI GENERATION FUNCTIONS ---
+        /**
+         * Generates a new personal development task using AI and adds it to the input field.
+         * This function is used for daily goals.
+         */
+        async function generateAITask(targetInput, sourceButton) {
+            targetInput.value = 'Görev oluşturuluyor...'; // Loading message
+            targetInput.disabled = true; // Disable input
+            if (sourceButton) sourceButton.disabled = true; // Disable button if provided
+            // Disable the add goal button while AI is generating a task
+            addGoalBtn.disabled = true;
+
+            // Refined prompt for more creative and direct tasks
+            const prompt = "Sadece bir adet, kısa, net, hemen uygulanabilir ve motivasyon sağlayacak bir kişisel gelişim görevi oluştur. Görevler ruhsal, fiziksel, sosyal, öğrenmeye veya yaratıcılığa yönelik olabilir. Asla liste veya birden fazla görev verme, sadece tek bir görev cümlesi yaz. Başında veya sonunda 'Görev: ' gibi ek metinler, selamlama veya açıklamalar KULLANMA. Örneğin: 'Yeni bir dilin temel cümlelerini öğren.', 'Bugün 15 dakika doğa yürüyüşü yap.', 'Sevdiğin birine içten bir mesaj gönder.', '5 yeni kelime öğren ve kullan.', 'Meditasyon yap.' Türkçe.";
+            let chatHistory = [];
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+            const payload = { contents: chatHistory };
+            const apiKey = ""; // Will be provided by the Canvas environment
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    targetInput.value = text.trim(); // Write the generated task to the input
+                } else {
+                    targetInput.value = 'Görev oluşturulamadı. Lütfen tekrar deneyin.';
+                    console.error("AI task generation error: Unexpected response structure.");
+                }
+            } catch (error) {
+                targetInput.value = 'Görev oluşturulurken bir hata oluştu.';
+                console.error("AI task generation error:", error);
+            } finally {
+                targetInput.disabled = false; // Re-enable input
+                if (sourceButton) sourceButton.disabled = false; // Re-enable button if provided
+                addGoalBtn.disabled = false; // Re-enable the add goal button
+            }
+        }
+
+        /**
+         * Generates a concise summary of the daily report using AI.
+         */
+        async function generateDailySummary() {
+            const reportText = dailyReportInput.value.trim();
+            if (!reportText) {
+                summaryTextEl.textContent = 'Özetlenecek bir rapor bulunamadı.';
+                summaryOutputEl.classList.remove('hidden');
+                return;
+            }
+
+            summaryLoadingEl.classList.remove('hidden');
+            summaryOutputEl.classList.add('hidden');
+            generateSummaryBtn.disabled = true;
+
+            const prompt = `Aşağıdaki günlük raporu en fazla 3 cümlede özetle: \n\n${reportText}\n\nÖzet:`;
+            let chatHistory = [];
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+            const payload = { contents: chatHistory };
+            const apiKey = ""; // Will be provided by the Canvas environment
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    summaryTextEl.textContent = text.trim();
+                    summaryOutputEl.classList.remove('hidden');
+                } else {
+                    summaryTextEl.textContent = 'Özet oluşturulamadı. Lütfen tekrar deneyin.';
+                    summaryOutputEl.classList.remove('hidden');
+                    console.error("Yapay zeka özet oluşturma hatası: Yanıt yapısı beklenmedik.");
+                }
+            } catch (error) {
+                summaryTextEl.textContent = 'Özet oluşturulurken bir hata oluştu.';
+                summaryOutputEl.classList.remove('hidden');
+                console.error("Yapay zeka özet oluşturma hatası:", error);
+            } finally {
+                summaryLoadingEl.classList.add('hidden');
+                generateSummaryBtn.disabled = false;
+            }
+        }
+
+        /**
+         * Shows the custom confirmation modal.
+         */
+        function showConfirmModal() {
+            customConfirmModal.classList.remove('hidden');
+        }
+
+        /**
+         * Hides the custom confirmation modal.
+         */
+        function hideConfirmModal() {
+            customConfirmModal.classList.add('hidden');
+        }
+
+        /**
+         * Clears all goals from the dailyData and updates UI and Firestore.
+         */
+        function performClearAllGoals() {
+            dailyData.goals = []; // Hedefler dizisini temizle
+            newGoalInput.value = ''; // Yeni hedef giriş alanını temizle
+            renderGoals(); // Hedef listesini yeniden render et (boş liste gösterecek)
+            updateScore(); // Skoru güncelle (0/0 olacak)
+            saveData(); // Değişiklikleri Firestore'a kaydet
+            hideConfirmModal(); // Modalı kapat
+        }
+
+
+        // --- EVENT LISTENERS ---
+        /**
+         * Sets up all event listeners for user interactions.
+         */
+        function setupEventListeners() {
+            /**
+             * Handles emoji selector clicks.
+             * @param {Event} e - The click event.
+             * @param {HTMLElement} selector - The emoji selector container element.
+             * @param {string} dataType - The relevant field in daily data (e.g., 'mood', 'productivity').
+             */
+            function handleEmojiClick(e, selector, dataType) {
+                if (e.target.tagName === 'SPAN') {
+                    const clickedEmoji = e.target;
+
+                    // Remove 'selected' and 'glowing' from ALL emojis in this selector
+                    Array.from(selector.children).forEach(span => {
+                        span.classList.remove('selected');
+                        span.classList.remove('glowing'); // Ensure previous glows are stopped
+                    });
+                    
+                    // Update data immediately
+                    dailyData[dataType] = clickedEmoji.dataset.value;
+                    saveData();
+
+                    // Add 'selected' class immediately to the clicked emoji
+                    clickedEmoji.classList.add('selected');
+
+                    // Add 'glowing' animation class
+                    clickedEmoji.classList.add('glowing');
+                    clickedEmoji.addEventListener('animationend', () => {
+                        // Remove 'glowing' class after animation completes
+                        clickedEmoji.classList.remove('glowing');
+                    }, { once: true }); // Ensure listener runs only once
+                }
+            }
+
+            // Add event listeners to mood and productivity selectors
+            moodSelector.addEventListener('click', e => handleEmojiClick(e, moodSelector, 'mood'));
+            productivitySelector.addEventListener('click', e => handleEmojiClick(e, productivitySelector, 'productivity'));
+
+            // Manage interactions within the goal list
+            goalListEl.addEventListener('click', e => {
+                const target = e.target;
+                const index = parseInt(target.dataset.index);
+                if (isNaN(index)) return; // Exit if not a valid index
+
+                let changed = false;
+                if (target.type === 'checkbox') {
+                    // Update goal completion status
+                    dailyData.goals[index].completed = target.checked;
+                    changed = true;
+                }
+                if (target.classList.contains('delete-btn')) {
+                    // Delete goal from the list
+                    dailyData.goals.splice(index, 1);
+                    changed = true;
+                }
+                if (changed) {
+                    renderGoals(); // Update UI immediately
+                    updateScore(); // Update score immediately
+                    saveData(); // Save data
+                }
+            });
+            
+            // Handles add goal button click
+            addGoalBtn.addEventListener('click', () => {
+                const text = newGoalInput.value.trim();
+                // Prevent adding "Görev oluşturuluyor..." as a goal
+                if (text && text !== 'Görev oluşturuluyor...') {
+                    if (!dailyData.goals) { dailyData.goals = []; } // Create goals array if it doesn't exist
+                    dailyData.goals.push({ text: text, completed: false });
+                    newGoalInput.value = ''; // Clear input field
+                    renderGoals(); // Re-render goal list
+                    updateScore(); // Update score
+                    saveData(); // Save data
+                }
+            });
+            // Add goal on 'Enter' key press in the new goal input field
+            newGoalInput.addEventListener('keypress', (e) => {
+                // Prevent adding "Görev oluşturuluyor..." as a goal when pressing Enter
+                if (e.key === 'Enter' && newGoalInput.value.trim() !== 'Görev oluşturuluyor...') {
+                    addGoalBtn.click();
+                }
+            });
+            
+            // Event listener for "Generate Random Task" button
+            generateAiTaskBtn.addEventListener('click', () => {
+                generateAITask(newGoalInput, generateAiTaskBtn);
+            });
+
+            // Event listener for "Clear All Goals" button - now shows the custom modal
+            clearAllGoalsBtn.addEventListener('click', showConfirmModal);
+
+            // Event listeners for custom confirmation modal buttons
+            confirmYesBtn.addEventListener('click', performClearAllGoals);
+            confirmNoBtn.addEventListener('click', hideConfirmModal);
+
+
+            // generateNextDayGoalBtn kaldırıldığı için ilgili event listener da kaldırıldı
+            // Event listener for "Generate Summary" button
+            generateSummaryBtn.addEventListener('click', generateDailySummary);
+
+            // Event listeners for other input fields
+            rewardInput.addEventListener('input', () => { dailyData.reward = rewardInput.value; saveData(); });
+            gratitudeInputs.forEach((input, i) => input.addEventListener('input', () => { dailyData.gratitude[i] = input.value; saveData(); }));
+            nextDayGoalInput.addEventListener('input', () => { dailyData.nextDayGoal = nextDayGoalInput.value; saveData(); });
+            dailyReportInput.addEventListener('input', () => { dailyData.report = dailyReportInput.value; saveData(); });
+
+            // Tab button listeners
+            tabTodayBtn.addEventListener('click', () => showSection('today-journal'));
+            tabReportsBtn.addEventListener('click', () => showSection('daily-reports'));
+        }
+
+        /**
+         * Shows the specified section and hides others.
+         * @param {string} sectionName - 'today-journal' or 'daily-reports'.
+         */
+        async function showSection(sectionName) {
+            // Hide all sections
+            todayJournalSection.classList.add('hidden');
+            dailyReportsSection.classList.add('hidden');
+
+            // Remove 'selected' class from all tab buttons
+            tabTodayBtn.classList.remove('selected');
+            tabReportsBtn.classList.remove('selected');
+
+            // Perform actions based on the selected section and button
+            if (sectionName === 'today-journal') {
+                todayJournalSection.classList.remove('hidden');
+                tabTodayBtn.classList.add('selected');
+            } else if (sectionName === 'daily-reports') {
+                dailyReportsSection.classList.remove('hidden');
+                tabReportsBtn.classList.add('selected');
+                await loadAllDailyReports(); // Load reports when switching to this tab
+            }
+        }
+
+        /**
+         * Fetches and displays all daily reports from Firestore.
+         */
+        async function loadAllDailyReports() {
+            if (!userId || !db || !isAuthReady) {
+                reportsListEl.innerHTML = '<p class="text-gray-400">Veriler yüklenemiyor. Lütfen giriş yaptığınızdan emin olun.</p>';
+                return;
+            }
+
+            reportsListEl.innerHTML = '<p class="text-gray-400">Raporlar yükleniyor...</p>';
+            const logsCollectionRef = collection(db, "artifacts", appId, "users", userId, "dailyLogs");
+
+            try {
+                const querySnapshot = await getDocs(logsCollectionRef);
+                let reports = [];
+                querySnapshot.forEach(doc => {
+                    reports.push(doc.data());
+                });
+
+                // Sort reports in descending order by date (newest to oldest)
+                reports.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                if (reports.length === 0) {
+                    reportsListEl.innerHTML = '<p class="text-gray-400">Henüz geçmiş günlük raporunuz bulunmamaktadır.</p>';
+                    return;
+                }
+
+                reportsListEl.innerHTML = ''; // Clear previous reports
+                reports.forEach(report => {
+                    const reportDate = new Date(report.date).toLocaleDateString('tr-TR', { year: 'numeric', month: 'long', day: 'numeric' });
+                    const completedGoals = report.goals?.filter(g => g.completed).length || 0;
+                    const totalGoals = report.goals?.length || 0;
+                    const moodEmoji = report.mood === 'happy' ? '😊' : report.mood === 'neutral' ? '😐' : report.mood === 'sad' ? '😔' : '';
+                    const productivityEmoji = report.productivity === 'high' ? '🚀' : report.productivity === 'medium' ? '⚙️' : report.productivity === 'low' ? '🐌' : '';
+
+                    // Check if trophy should be displayed and animated
+                    const showTrophy = totalGoals > 0 && completedGoals >= (totalGoals * 0.75); // Updated condition for reports too
+                    const trophyHtml = showTrophy ? `<span class="report-trophy text-yellow-400 ${showTrophy ? 'trophy-glowing' : ''}">🏆</span>` : '';
+
+                    const reportCard = document.createElement('div');
+                    reportCard.className = 'card p-6';
+                    reportCard.innerHTML = `
+                        <h3 class="text-xl font-semibold mb-3 flex items-center">
+                            ${reportDate} ${trophyHtml}
+                        </h3>
+                        <p class="text-gray-300 mb-2">Ruh Hali: ${moodEmoji || 'Belirtilmedi'}</p>
+                        <p class="text-gray-300 mb-2">Üretkenlik: ${productivityEmoji || 'Belirtilmedi'}</p>
+                        <p class="text-gray-300 mb-2">Tamamlanan Hedefler: ${completedGoals}/${totalGoals}</p>
+                        <p class="text-gray-300 mb-2">Ödül: ${report.reward || 'Belirtilmedi'}</p>
+                        <p class="text-300 mb-2">Şükür Listesi: ${report.gratitude?.filter(g => g).join(', ') || 'Belirtilmedi'}</p>
+                        <p class="text-gray-300 mb-2">Gün Raporu: ${report.report || 'Belirtilmedi'}</p>
+                        <p class="text-gray-300 mb-2">Yarın İçin Niyet: ${report.nextDayGoal || 'Belirtilmedi'}</p>
+                    `;
+                    reportsListEl.appendChild(reportCard);
+                });
+            } catch (error) {
+                console.error("Error loading all daily reports:", error);
+                reportsListEl.innerHTML = '<p class="text-red-400">Raporlar yüklenirken bir hata oluştu.</p>';
+            }
+        }
+        
+        // --- START APPLICATION ---
+        initializeFirebase();
+    </script>
+</body>
+</html>
